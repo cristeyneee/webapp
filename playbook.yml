@@ -1,0 +1,39 @@
+---
+- name: Create a Docker image with an HTML file
+  hosts: localhost, server2
+  become: true
+  tasks:
+    - name: Ensure the working directory exists on the remote server
+      file:
+        path: /tmp/docker_html_app
+        state: directory
+
+    - name: Copy the existing HTML file to the working directory
+      copy:
+        src: ./files/index.html
+        dest: /tmp/docker_html_app/index.html
+
+    - name: Copy the Dockerfile to the working directory
+      copy:
+        src: ./dockerfile.web  # Ensure this file exists locally
+        dest: /tmp/docker_html_app/Dockerfile
+
+    - name: Build the Docker image
+      community.docker.docker_image:
+        source: build
+        build:
+          path: /tmp/docker_html_app
+        name: webapp
+        tag: latest
+        state: present
+
+    - name: Display the list of Docker images
+      command: docker images
+
+    - name: Run the Docker container
+      community.docker.docker_container:
+        name: webapp-container
+        image: webapp:latest
+        state: started
+        ports:
+          - "8080:80"

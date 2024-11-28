@@ -1,0 +1,8 @@
+all:
+  hosts:
+    server1:
+      ansible_host: 192.168.100.42
+      ansible_user: cristine
+    server2:
+      ansible_host: 192.168.100.43
+      ansible_user: cristine
